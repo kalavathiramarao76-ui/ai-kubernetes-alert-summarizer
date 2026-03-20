@@ -854,3 +854,81 @@ html.light .onboarding-card {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
+/* ===== Accessibility ===== */
+
+/* Reduced motion: disable all animations and transitions */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .cursor-blink,
+  .status-dot-green,
+  .status-dot-red,
+  .status-dot-yellow,
+  .monitoring-pulse-dot,
+  .skeleton,
+  .nav-badge,
+  .animate-fade-in,
+  .animate-slide-up,
+  .theme-icon-rotate,
+  .favorite-star-pop,
+  .favorite-spark-1,
+  .favorite-spark-2,
+  .favorite-spark-3,
+  .confetti-piece,
+  .monitoring-bar-grow {
+    animation: none !important;
+  }
+}
+
+/* Focus-visible rings on all interactive elements */
+:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Remove default outline when using mouse */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-to-content:focus {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 99999;
+  width: auto;
+  height: auto;
+  padding: 8px 16px;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  background: #6366f1;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
