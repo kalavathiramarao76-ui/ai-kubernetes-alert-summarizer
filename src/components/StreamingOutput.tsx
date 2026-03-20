@@ -2,18 +2,23 @@
 
 import { useState, useCallback } from "react";
 import ExportReport from "@/components/ExportReport";
+import FavoriteButton from "@/components/FavoriteButton";
 
 interface StreamingOutputProps {
   content: string;
   loading: boolean;
   title?: string;
   icon?: string;
+  inputText?: string;
+  favoriteType?: "analysis" | "runbook";
 }
 
 export default function StreamingOutput({
   content,
   loading,
   title = "Analysis Result",
+  inputText = "",
+  favoriteType = "analysis",
 }: StreamingOutputProps) {
   const [copied, setCopied] = useState(false);
 
@@ -55,6 +60,14 @@ export default function StreamingOutput({
               </svg>
               Copy for Slack
             </button>
+          )}
+          {!loading && content && (
+            <FavoriteButton
+              content={content}
+              title={title}
+              input={inputText}
+              type={favoriteType}
+            />
           )}
           {!loading && content && (
             <ExportReport content={content} title={title} />

@@ -24,11 +24,13 @@ export default function RunbooksPage() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [lastInput, setLastInput] = useState("");
 
   const handleGenerate = async (alert: string) => {
     setLoading(true);
     setResult("");
     setError("");
+    setLastInput(alert);
 
     try {
       const response = await fetch("/api/runbook", {
@@ -117,6 +119,8 @@ export default function RunbooksPage() {
         content={result}
         loading={loading}
         title="Generated Runbook"
+        inputText={lastInput}
+        favoriteType="runbook"
       />
 
       {!result && !loading && (
