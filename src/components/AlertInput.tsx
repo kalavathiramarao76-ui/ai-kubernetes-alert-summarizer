@@ -27,7 +27,7 @@ export default function AlertInput({
   };
 
   return (
-    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 animate-fade-in">
+    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 animate-fade-in alert-input-glow">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-lg font-semibold text-zinc-100">{title}</h2>
