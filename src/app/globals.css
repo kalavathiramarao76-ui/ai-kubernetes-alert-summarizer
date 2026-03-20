@@ -329,3 +329,66 @@ body {
 .animate-slide-up {
   animation: slideUp 0.3s ease-out;
 }
+
+/* ===== Monitoring Dashboard ===== */
+.monitoring-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .monitoring-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.monitoring-card {
+  background: rgba(24, 24, 27, 0.7);
+  border: 1px solid rgba(63, 63, 70, 0.4);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+.monitoring-card:hover {
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+/* Pulse animation for live dots */
+@keyframes monitoringPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+.monitoring-pulse-dot {
+  animation: monitoringPulse 2s ease-in-out infinite;
+}
+
+/* Gauge arc draw animation */
+.monitoring-gauge-arc {
+  transition: d 0.8s ease-out;
+}
+
+/* Gauge needle smooth rotation */
+.monitoring-gauge-needle {
+  transition: all 0.8s ease-out;
+}
+
+/* Rate limit bar fill animation */
+.monitoring-rate-bar {
+  transition: width 0.8s ease-out, background 0.5s ease;
+}
+
+/* Bar chart grow animation */
+@keyframes barGrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+.monitoring-bar-grow {
+  transform-origin: bottom;
+  animation: barGrow 0.5s ease-out both;
+}
+
+/* Monospace tabular nums for ticking numbers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
