@@ -41,6 +41,20 @@ function fuzzyMatch(query: string, text: string): boolean {
   return qi === q.length;
 }
 
+function cycleTheme() {
+  const current = localStorage.getItem("k8s-theme") || "dark";
+  const order = ["dark", "light", "system"];
+  const next = order[(order.indexOf(current) + 1) % order.length];
+  localStorage.setItem("k8s-theme", next);
+  const resolved = next === "system"
+    ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+    : next;
+  document.documentElement.classList.remove("dark", "light");
+  document.documentElement.classList.add(resolved);
+  document.documentElement.setAttribute("data-theme", resolved);
+  window.dispatchEvent(new CustomEvent("theme-changed", { detail: { theme: next, resolved } }));
+}
+
 export default function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -113,6 +127,52 @@ export default function CommandPalette() {
       icon: "M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z",
       action: () => router.push("/"),
       category: "navigation",
+    },
+    // Theme commands
+    {
+      id: "toggle-theme",
+      label: "Toggle Theme",
+      description: "Switch between dark, light, and system themes",
+      icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z",
+      action: () => cycleTheme(),
+      category: "action",
+    },
+    {
+      id: "theme-dark",
+      label: "Dark Theme",
+      description: "Switch to dark mode",
+      icon: "M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z",
+      action: () => {
+        localStorage.setItem("k8s-theme", "dark");
+        document.documentElement.classList.remove("dark", "light");
+        document.documentElement.classList.add("dark");
+        document.documentElement.setAttribute("data-theme", "dark");
+        window.dispatchEvent(new CustomEvent("theme-changed", { detail: { theme: "dark", resolved: "dark" } }));
+      },
+      category: "action",
+    },
+    {
+      id: "theme-light",
+      label: "Light Theme",
+      description: "Switch to light mode",
+      icon: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
+      action: () => {
+        localStorage.setItem("k8s-theme", "light");
+        document.documentElement.classList.remove("dark", "light");
+        document.documentElement.classList.add("light");
+        document.documentElement.setAttribute("data-theme", "light");
+        window.dispatchEvent(new CustomEvent("theme-changed", { detail: { theme: "light", resolved: "light" } }));
+      },
+      category: "action",
+    },
+    // Export commands
+    {
+      id: "export-print",
+      label: "Print Report as PDF",
+      description: "Print the current analysis or runbook as a formatted PDF",
+      icon: "M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z",
+      action: () => window.print(),
+      category: "action",
     },
     {
       id: "sample-prometheus",
@@ -237,7 +297,8 @@ export default function CommandPalette() {
         {/* Search input */}
         <div className="cmd-palette-input-wrap">
           <svg
-            className="w-5 h-5 text-zinc-500"
+            className="w-5 h-5"
+            style={{ color: "var(--text-muted)" }}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -265,7 +326,7 @@ export default function CommandPalette() {
         {/* Results */}
         <div className="cmd-palette-list" ref={listRef}>
           {sorted.length === 0 && (
-            <div className="px-4 py-8 text-center text-sm text-zinc-500">
+            <div className="px-4 py-8 text-center text-sm" style={{ color: "var(--text-muted)" }}>
               No commands found for &ldquo;{query}&rdquo;
             </div>
           )}
@@ -276,7 +337,7 @@ export default function CommandPalette() {
             return (
               <div key={cmd.id}>
                 {showCategory && (
-                  <div className="px-4 pt-3 pb-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                  <div className="px-4 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-muted)" }}>
                     {isRecent ? "Recent" : categoryLabels[cmd.category] || cmd.category}
                   </div>
                 )}
@@ -304,21 +365,22 @@ export default function CommandPalette() {
                     </svg>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-zinc-200">
+                    <div className="text-sm font-medium" style={{ color: "var(--text-primary)" }}>
                       {cmd.label}
                     </div>
-                    <div className="text-xs text-zinc-500 truncate">
+                    <div className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
                       {cmd.description}
                     </div>
                   </div>
                   {isRecent && (
-                    <span className="text-[10px] px-1.5 py-0.5 bg-zinc-800 text-zinc-500 rounded font-mono">
+                    <span className="text-[10px] px-1.5 py-0.5 rounded font-mono" style={{ background: "var(--surface-hover)", color: "var(--text-muted)" }}>
                       recent
                     </span>
                   )}
                   {idx === selectedIndex && (
                     <svg
-                      className="w-4 h-4 text-zinc-500"
+                      className="w-4 h-4"
+                      style={{ color: "var(--text-muted)" }}
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -339,12 +401,12 @@ export default function CommandPalette() {
 
         {/* Footer */}
         <div className="cmd-palette-footer">
-          <div className="flex items-center gap-3 text-xs text-zinc-600">
+          <div className="flex items-center gap-3 text-xs" style={{ color: "var(--text-muted)" }}>
             <span className="flex items-center gap-1">
-              <kbd className="cmd-palette-kbd-sm">↑↓</kbd> navigate
+              <kbd className="cmd-palette-kbd-sm">&uarr;&darr;</kbd> navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="cmd-palette-kbd-sm">↵</kbd> select
+              <kbd className="cmd-palette-kbd-sm">&crarr;</kbd> select
             </span>
             <span className="flex items-center gap-1">
               <kbd className="cmd-palette-kbd-sm">esc</kbd> close
