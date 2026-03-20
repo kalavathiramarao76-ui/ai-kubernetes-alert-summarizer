@@ -4,6 +4,7 @@ import { useState } from "react";
 import AlertInput from "@/components/AlertInput";
 import StreamingOutput from "@/components/StreamingOutput";
 import StatusIndicator from "@/components/StatusIndicator";
+import ApiErrorFallback from "@/components/ApiErrorFallback";
 
 const commonAlerts = [
   { name: "CrashLoopBackOff", description: "Pod repeatedly crashing and restarting" },
@@ -104,15 +105,12 @@ export default function RunbooksPage() {
       />
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
-          <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <div>
-            <p className="text-sm font-medium text-red-400">Generation Failed</p>
-            <p className="text-xs text-red-400/70 mt-1">{error}</p>
-          </div>
-        </div>
+        <ApiErrorFallback
+          error={error}
+          onRetry={() => {
+            if (lastInput) handleGenerate(lastInput);
+          }}
+        />
       )}
 
       <StreamingOutput
