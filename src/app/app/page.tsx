@@ -9,11 +9,13 @@ export default function AnalyzePage() {
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [lastInput, setLastInput] = useState("");
 
   const handleAnalyze = async (alert: string) => {
     setLoading(true);
     setResult("");
     setError("");
+    setLastInput(alert);
 
     try {
       const response = await fetch("/api/analyze", {
@@ -81,6 +83,8 @@ export default function AnalyzePage() {
         content={result}
         loading={loading}
         title="AI Analysis"
+        inputText={lastInput}
+        favoriteType="analysis"
       />
 
       {!result && !loading && (
