@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/app", label: "Analyze", icon: "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" },
@@ -11,16 +12,45 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [aiStatus, setAiStatus] = useState<"checking" | "online" | "offline">("checking");
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const res = await fetch("https://sai.sharedllm.com/v1/models", {
+          method: "GET",
+          signal: AbortSignal.timeout(5000),
+        });
+        setAiStatus(res.ok ? "online" : "offline");
+      } catch {
+        setAiStatus("offline");
+      }
+    };
+    check();
+    const interval = setInterval(check, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <nav className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center relative">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
+              {/* Pulsing AI health dot */}
+              <span
+                className={`absolute -top-0.5 -right-0.5 status-dot ${
+                  aiStatus === "online"
+                    ? "status-dot-green"
+                    : aiStatus === "offline"
+                    ? "status-dot-red"
+                    : "status-dot-yellow"
+                }`}
+                style={{ width: 7, height: 7 }}
+              />
             </div>
             <div>
               <span className="text-lg font-bold text-zinc-100 group-hover:text-indigo-400 transition-colors">
@@ -31,6 +61,21 @@ export default function Navbar() {
           </Link>
 
           <div className="flex items-center gap-1">
+            {/* Cmd+K trigger */}
+            <button
+              onClick={() => {
+                window.dispatchEvent(
+                  new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
+                );
+              }}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 mr-2 bg-zinc-900 border border-zinc-700/60 hover:border-zinc-600 rounded-lg text-xs text-zinc-500 hover:text-zinc-300 transition-all cursor-pointer"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="font-mono">Cmd+K</span>
+            </button>
+
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/app" && pathname.startsWith(item.href));
               const isAnalyzeActive = item.href === "/app" && (pathname === "/app" || pathname === "/app/analyze");
