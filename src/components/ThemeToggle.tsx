@@ -127,8 +127,9 @@ export default function ThemeToggle() {
           e.preventDefault();
           setOpen(!open);
         }}
-        className="theme-toggle-btn p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 dark:hover:bg-zinc-800/50 light-mode:hover:bg-zinc-200 transition-all"
+        className="theme-toggle-btn p-2 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 dark:hover:bg-zinc-800/50 light-mode:hover:bg-zinc-200 transition-all focus-visible:ring-2 focus-visible:ring-indigo-500"
         title={`Theme: ${theme} (right-click for options)`}
+        aria-label={`Current theme: ${theme}. Click to cycle, right-click for options`}
       >
         <div className={`theme-icon-wrapper ${rotating ? "theme-icon-rotate" : ""}`}>
           {theme === "light" ? (

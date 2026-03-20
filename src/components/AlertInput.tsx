@@ -37,20 +37,23 @@ export default function AlertInput({
           <span className="text-xs text-zinc-600">Try sample:</span>
           <button
             onClick={() => loadSample("prometheus")}
-            className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+            className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+            aria-label="Load sample Prometheus alert"
           >
             Prometheus
           </button>
           <button
             onClick={() => loadSample("pagerduty")}
-            className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+            className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+            aria-label="Load sample PagerDuty alert"
           >
             PagerDuty
           </button>
           {multiAlert && (
             <button
               onClick={() => loadSample("multiAlert")}
-              className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors"
+              className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+              aria-label="Load sample multi-alert"
             >
               Multi-Alert
             </button>
@@ -69,13 +72,15 @@ export default function AlertInput({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={placeholder}
-          className="w-full h-64 bg-zinc-950 border border-zinc-700 rounded-lg p-4 pt-10 text-sm font-mono text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 resize-none transition-all"
+          className="w-full h-64 bg-zinc-950 border border-zinc-700 rounded-lg p-4 pt-10 text-sm font-mono text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 resize-none transition-all focus-visible:ring-2 focus-visible:ring-indigo-500"
           spellCheck={false}
+          aria-label={title}
         />
         {input && (
           <button
             onClick={() => setInput("")}
-            className="absolute top-3 right-3 text-xs text-zinc-600 hover:text-zinc-400 transition-colors"
+            className="absolute top-3 right-3 text-xs text-zinc-600 hover:text-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+            aria-label="Clear alert input"
           >
             Clear
           </button>
@@ -89,7 +94,8 @@ export default function AlertInput({
         <button
           onClick={() => onSubmit(input)}
           disabled={!input.trim() || loading}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2 disabled:cursor-not-allowed"
+          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-500"
+          aria-label={loading ? "Analyzing alert" : "Analyze alert"}
         >
           {loading ? (
             <>
