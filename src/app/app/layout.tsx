@@ -4,7 +4,7 @@ import StatusDashboard from "@/components/StatusDashboard";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-zinc-950 bg-grid-pattern">
+    <div className="min-h-screen bg-grid-pattern" style={{ background: "var(--background)" }}>
       <Navbar />
       <CommandPalette />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

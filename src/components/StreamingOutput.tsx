@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import ExportReport from "@/components/ExportReport";
 
 interface StreamingOutputProps {
   content: string;
@@ -55,6 +56,9 @@ export default function StreamingOutput({
               Copy for Slack
             </button>
           )}
+          {!loading && content && (
+            <ExportReport content={content} title={title} />
+          )}
           <button
             onClick={() => copyToClipboard(content)}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded-lg text-xs font-medium transition-colors"
@@ -78,7 +82,7 @@ export default function StreamingOutput({
         </div>
       </div>
 
-      <div className="bg-zinc-950 border border-zinc-800 rounded-lg p-5 min-h-[200px]">
+      <div className="rounded-lg p-5 min-h-[200px]" style={{ background: "var(--input-bg)", border: "1px solid var(--border)" }}>
         <div className="ai-output prose prose-invert max-w-none">
           <MarkdownRenderer content={content} />
           {loading && <span className="inline-block w-2 h-5 bg-indigo-500 ml-0.5 cursor-blink" />}
@@ -99,8 +103,8 @@ function MarkdownRenderer({ content }: { content: string }) {
     if (line.startsWith("```")) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`code-${i}`} className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 mb-3 overflow-x-auto">
-            <code className="text-sm font-mono text-zinc-300">{codeContent}</code>
+          <pre key={`code-${i}`} className="rounded-lg p-4 mb-3 overflow-x-auto" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+            <code className="text-sm font-mono" style={{ color: "var(--text-secondary)" }}>{codeContent}</code>
           </pre>
         );
         codeContent = "";
@@ -118,22 +122,22 @@ function MarkdownRenderer({ content }: { content: string }) {
 
     // Headers
     if (line.startsWith("### ")) {
-      elements.push(<h3 key={i} className="text-base font-semibold text-zinc-300 mt-3 mb-1">{renderInline(line.slice(4))}</h3>);
+      elements.push(<h3 key={i} className="text-base font-semibold mt-3 mb-1" style={{ color: "var(--text-secondary)" }}>{renderInline(line.slice(4))}</h3>);
     } else if (line.startsWith("## ")) {
-      elements.push(<h2 key={i} className="text-lg font-semibold text-zinc-200 mt-4 mb-2">{renderInline(line.slice(3))}</h2>);
+      elements.push(<h2 key={i} className="text-lg font-semibold mt-4 mb-2" style={{ color: "var(--text-primary)" }}>{renderInline(line.slice(3))}</h2>);
     } else if (line.startsWith("# ")) {
-      elements.push(<h1 key={i} className="text-xl font-bold text-zinc-100 mt-4 mb-2">{renderInline(line.slice(2))}</h1>);
+      elements.push(<h1 key={i} className="text-xl font-bold mt-4 mb-2" style={{ color: "var(--text-primary)" }}>{renderInline(line.slice(2))}</h1>);
     }
     // Horizontal rule
     else if (line.match(/^---+$/)) {
-      elements.push(<hr key={i} className="border-zinc-700 my-4" />);
+      elements.push(<hr key={i} className="my-4" style={{ borderColor: "var(--border)" }} />);
     }
     // Bullet lists
     else if (line.match(/^\s*[-*]\s/)) {
       const indent = line.match(/^(\s*)/)?.[1].length || 0;
       const text = line.replace(/^\s*[-*]\s/, "");
       elements.push(
-        <div key={i} className="flex items-start gap-2 text-zinc-300 mb-1" style={{ marginLeft: `${indent * 8}px` }}>
+        <div key={i} className="flex items-start gap-2 mb-1" style={{ marginLeft: `${indent * 8}px`, color: "var(--text-secondary)" }}>
           <span className="text-indigo-400 mt-1.5 text-xs">&#9679;</span>
           <span>{renderInline(text)}</span>
         </div>
@@ -144,7 +148,7 @@ function MarkdownRenderer({ content }: { content: string }) {
       const num = line.match(/^\s*(\d+)\./)?.[1];
       const text = line.replace(/^\s*\d+\.\s/, "");
       elements.push(
-        <div key={i} className="flex items-start gap-2 text-zinc-300 mb-1">
+        <div key={i} className="flex items-start gap-2 mb-1" style={{ color: "var(--text-secondary)" }}>
           <span className="text-indigo-400 font-mono text-sm min-w-[1.5rem]">{num}.</span>
           <span>{renderInline(text)}</span>
         </div>
@@ -153,7 +157,7 @@ function MarkdownRenderer({ content }: { content: string }) {
     // Blockquote
     else if (line.startsWith("> ")) {
       elements.push(
-        <blockquote key={i} className="border-l-2 border-indigo-500 pl-4 text-zinc-400 italic my-1">
+        <blockquote key={i} className="border-l-2 border-indigo-500 pl-4 italic my-1" style={{ color: "var(--text-tertiary)" }}>
           {renderInline(line.slice(2))}
         </blockquote>
       );
@@ -164,15 +168,15 @@ function MarkdownRenderer({ content }: { content: string }) {
     }
     // Paragraph
     else {
-      elements.push(<p key={i} className="text-zinc-300 mb-1 leading-relaxed">{renderInline(line)}</p>);
+      elements.push(<p key={i} className="mb-1 leading-relaxed" style={{ color: "var(--text-secondary)" }}>{renderInline(line)}</p>);
     }
   });
 
   // Close any unclosed code block
   if (inCodeBlock && codeContent) {
     elements.push(
-      <pre key="code-final" className="bg-zinc-900 border border-zinc-700 rounded-lg p-4 mb-3 overflow-x-auto">
-        <code className="text-sm font-mono text-zinc-300">{codeContent}</code>
+      <pre key="code-final" className="rounded-lg p-4 mb-3 overflow-x-auto" style={{ background: "var(--surface)", border: "1px solid var(--border)" }}>
+        <code className="text-sm font-mono" style={{ color: "var(--text-secondary)" }}>{codeContent}</code>
       </pre>
     );
   }
@@ -191,7 +195,7 @@ function renderInline(text: string): React.ReactNode {
     const codeMatch = remaining.match(/^`([^`]+)`/);
     if (codeMatch) {
       parts.push(
-        <code key={key++} className="bg-zinc-800 text-indigo-400 px-1.5 py-0.5 rounded text-sm font-mono">
+        <code key={key++} className="px-1.5 py-0.5 rounded text-sm font-mono" style={{ background: "var(--code-bg)", color: "#818cf8" }}>
           {codeMatch[1]}
         </code>
       );
@@ -202,7 +206,7 @@ function renderInline(text: string): React.ReactNode {
     // Bold
     const boldMatch = remaining.match(/^\*\*([^*]+)\*\*/);
     if (boldMatch) {
-      parts.push(<strong key={key++} className="text-zinc-100 font-semibold">{boldMatch[1]}</strong>);
+      parts.push(<strong key={key++} className="font-semibold" style={{ color: "var(--text-primary)" }}>{boldMatch[1]}</strong>);
       remaining = remaining.slice(boldMatch[0].length);
       continue;
     }
@@ -210,7 +214,7 @@ function renderInline(text: string): React.ReactNode {
     // Italic
     const italicMatch = remaining.match(/^\*([^*]+)\*/);
     if (italicMatch) {
-      parts.push(<em key={key++} className="text-zinc-400">{italicMatch[1]}</em>);
+      parts.push(<em key={key++} style={{ color: "var(--text-tertiary)" }}>{italicMatch[1]}</em>);
       remaining = remaining.slice(italicMatch[0].length);
       continue;
     }

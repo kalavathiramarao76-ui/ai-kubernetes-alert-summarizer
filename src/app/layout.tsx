@@ -38,15 +38,36 @@ export const metadata: Metadata = {
   },
 };
 
+// Inline script to prevent FOUC - applies theme class before first paint
+const themeScript = `
+(function() {
+  try {
+    var theme = localStorage.getItem('k8s-theme') || 'dark';
+    var resolved = theme;
+    if (theme === 'system') {
+      resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.classList.add(resolved);
+    document.documentElement.setAttribute('data-theme', resolved);
+  } catch(e) {
+    document.documentElement.classList.add('dark');
+  }
+})();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-zinc-950 text-zinc-100 min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
+        style={{ background: "var(--background)", color: "var(--foreground)" }}
       >
         {children}
       </body>
