@@ -847,6 +847,17 @@ html.light .onboarding-card {
   100% { top: 2px; left: -8px; opacity: 0; transform: scale(0); }
 }
 
+/* ===== Landing page fade-up sections ===== */
+.fade-up-section {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-up-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* line-clamp utility */
 .line-clamp-2 {
   display: -webkit-box;
