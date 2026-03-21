@@ -110,15 +110,23 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-50" role="navigation" aria-label="Main navigation">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav
+      className="sticky top-0 z-50 backdrop-blur-xl"
+      style={{
+        background: "rgba(9, 9, 11, 0.75)",
+        borderBottom: "1px solid var(--border-subtle)",
+      }}
+      role="navigation"
+      aria-label="Main navigation"
+    >
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-3 group" aria-label="K8s Alert AI home">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center relative">
+            <div className="w-8 h-8 bg-[#326CE5] rounded-lg flex items-center justify-center relative">
               <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
-              {/* Pulsing AI health dot */}
+              {/* AI health dot */}
               <span
                 className={`absolute -top-0.5 -right-0.5 status-dot ${
                   aiStatus === "online"
@@ -131,10 +139,10 @@ export default function Navbar() {
               />
             </div>
             <div>
-              <span className="text-lg font-bold text-zinc-100 group-hover:text-indigo-400 transition-colors">
+              <span className="text-lg font-bold transition-colors" style={{ color: "var(--text-primary)" }}>
                 K8s Alert AI
               </span>
-              <span className="hidden sm:inline text-xs text-zinc-500 ml-2 font-mono">v1.0</span>
+              <span className="hidden sm:inline text-[10px] font-mono ml-2 tracking-wider" style={{ color: "var(--text-muted)" }}>v1.0</span>
             </div>
           </Link>
 
@@ -146,39 +154,54 @@ export default function Navbar() {
                   new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
                 );
               }}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 mr-2 bg-zinc-900 border border-zinc-700/60 hover:border-zinc-600 rounded-lg text-xs text-zinc-500 hover:text-zinc-300 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 mr-2 rounded-full text-xs transition-all duration-200 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#326CE5]"
+              style={{
+                background: "var(--surface)",
+                border: "1px solid var(--border-subtle)",
+                color: "var(--text-muted)",
+              }}
               aria-label="Open command palette (Cmd+K)"
             >
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="font-mono">Cmd+K</span>
+              <span className="font-mono text-[11px]">Cmd+K</span>
             </button>
 
+            {/* Nav pills */}
             {navItems.map((item) => {
               const isActive = pathname === item.href || (item.href !== "/app" && pathname.startsWith(item.href));
               const isAnalyzeActive = item.href === "/app" && (pathname === "/app" || pathname === "/app/analyze");
+              const active = isActive || isAnalyzeActive;
               const badgeValue = getBadgeValue(item.badge);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   aria-label={`Navigate to ${item.label}`}
-                  aria-current={isActive || isAnalyzeActive ? "page" : undefined}
-                  className={`relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all focus-visible:ring-2 focus-visible:ring-indigo-500 ${
-                    isActive || isAnalyzeActive
-                      ? "bg-indigo-500/20 text-indigo-400 border border-indigo-500/30"
-                      : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
-                  }`}
+                  aria-current={active ? "page" : undefined}
+                  className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-[#326CE5]"
+                  style={active ? {
+                    background: "rgba(50, 108, 229, 0.12)",
+                    color: "#326CE5",
+                    border: "1px solid rgba(50, 108, 229, 0.2)",
+                  } : {
+                    background: "transparent",
+                    color: "var(--text-tertiary)",
+                    border: "1px solid transparent",
+                  }}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={active ? 2.5 : 2} d={item.icon} />
                   </svg>
                   <span className="hidden sm:inline">{item.label}</span>
                   {badgeValue !== null && (
-                    <span className="nav-badge absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-indigo-600 text-white text-[10px] font-bold rounded-full shadow-lg shadow-indigo-500/30">
+                    <span
+                      className="nav-badge absolute -top-1 -right-1 min-w-[16px] h-[16px] flex items-center justify-center px-1 text-white text-[9px] font-bold rounded-full"
+                      style={{ background: "#326CE5", boxShadow: "0 2px 8px rgba(50, 108, 229, 0.3)" }}
+                    >
                       {item.badge === "slack" ? (
-                        <svg className="w-2.5 h-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                        <svg className="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
                       ) : (
@@ -202,7 +225,8 @@ export default function Navbar() {
               href="https://github.com/kalavathiramarao76-ui/ai-kubernetes-alert-summarizer"
               target="_blank"
               rel="noopener noreferrer"
-              className="ml-2 p-2 text-zinc-500 hover:text-zinc-300 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+              className="ml-2 p-2 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#326CE5] rounded"
+              style={{ color: "var(--text-muted)" }}
               aria-label="View source code on GitHub"
             >
               <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

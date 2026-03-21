@@ -50,15 +50,21 @@ export default function AnalyzePage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-zinc-100">Alert Analyzer</h1>
-          <p className="text-sm text-zinc-500 mt-1">
-            Paste a Kubernetes alert to get AI-powered analysis, severity classification, and root cause detection.
-          </p>
+    <div className="space-y-10">
+      {/* Hero header */}
+      <div className="pt-4 pb-2">
+        <div className="flex items-center gap-4 mb-3">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-widest bg-[#326CE5]/10 text-[#326CE5] border border-[#326CE5]/20 font-mono">
+            Workspace
+          </span>
+          <StatusIndicator />
         </div>
-        <StatusIndicator />
+        <h1 className="text-4xl sm:text-5xl font-bold tracking-tight" style={{ color: "var(--text-primary)" }}>
+          Alert Analysis
+        </h1>
+        <p className="text-base mt-3 max-w-2xl leading-relaxed" style={{ color: "var(--text-tertiary)" }}>
+          Paste a Kubernetes alert to get AI-powered analysis, severity classification, and root cause detection.
+        </p>
       </div>
 
       <AlertInput
@@ -86,7 +92,7 @@ export default function AnalyzePage() {
       />
 
       {!result && !loading && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
           <FeatureCard
             title="Root Cause Analysis"
             description="Identifies the most likely root cause from alert patterns and K8s resource states."
@@ -110,14 +116,24 @@ export default function AnalyzePage() {
 
 function FeatureCard({ title, description, icon }: { title: string; description: string; icon: string }) {
   return (
-    <div className="bg-zinc-900/30 border border-zinc-800/50 rounded-xl p-5 animate-fade-in">
-      <div className="w-9 h-9 bg-zinc-800 rounded-lg flex items-center justify-center mb-3">
-        <svg className="w-4.5 h-4.5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
+    <div
+      className="rounded-2xl p-6 animate-fade-in transition-transform duration-200 hover:-translate-y-[1px]"
+      style={{
+        background: "var(--card-bg)",
+        border: "1px solid var(--border-subtle)",
+        backdropFilter: "blur(8px)",
+      }}
+    >
+      <div
+        className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
+        style={{ background: "rgba(50, 108, 229, 0.1)", border: "1px solid rgba(50, 108, 229, 0.15)" }}
+      >
+        <svg className="w-5 h-5 text-[#326CE5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={icon} />
         </svg>
       </div>
-      <h3 className="text-sm font-semibold text-zinc-200 mb-1">{title}</h3>
-      <p className="text-xs text-zinc-500 leading-relaxed">{description}</p>
+      <h3 className="text-sm font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>{title}</h3>
+      <p className="text-xs leading-relaxed" style={{ color: "var(--text-tertiary)" }}>{description}</p>
     </div>
   );
 }
