@@ -15,7 +15,7 @@ interface AlertInputProps {
 export default function AlertInput({
   onSubmit,
   loading,
-  placeholder = "Paste your Kubernetes alert JSON or text here...",
+  placeholder = '{\n  "alertname": "KubePodCrashLooping",\n  "namespace": "production",\n  "severity": "critical"\n}',
   title = "Alert Input",
   description = "Paste alert data from Prometheus, PagerDuty, OpsGenie, Grafana, or any monitoring system.",
   multiAlert = false,
@@ -27,24 +27,43 @@ export default function AlertInput({
   };
 
   return (
-    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 animate-fade-in alert-input-glow">
-      <div className="flex items-center justify-between mb-4">
+    <div
+      className="rounded-2xl p-6 sm:p-8 animate-fade-in alert-input-glow transition-transform duration-200"
+      style={{
+        background: "var(--card-bg)",
+        border: "1px solid var(--border-subtle)",
+        backdropFilter: "blur(8px)",
+      }}
+    >
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-lg font-semibold text-zinc-100">{title}</h2>
-          <p className="text-sm text-zinc-500 mt-1">{description}</p>
+          <h2 className="text-lg font-semibold" style={{ color: "var(--text-primary)" }}>{title}</h2>
+          <p className="text-sm mt-1" style={{ color: "var(--text-tertiary)" }}>{description}</p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-zinc-600">Try sample:</span>
+        {/* Sample alert pills */}
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <span className="text-[11px] font-mono uppercase tracking-wider mr-1" style={{ color: "var(--text-muted)" }}>Samples</span>
           <button
             onClick={() => loadSample("prometheus")}
-            className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="text-xs px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 hover:-translate-y-[1px] focus-visible:ring-2 focus-visible:ring-[#326CE5]"
+            style={{
+              background: "rgba(50, 108, 229, 0.08)",
+              color: "#326CE5",
+              border: "1px solid rgba(50, 108, 229, 0.15)",
+            }}
             aria-label="Load sample Prometheus alert"
           >
             Prometheus
           </button>
           <button
             onClick={() => loadSample("pagerduty")}
-            className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+            className="text-xs px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 hover:-translate-y-[1px] focus-visible:ring-2 focus-visible:ring-[#326CE5]"
+            style={{
+              background: "rgba(50, 108, 229, 0.08)",
+              color: "#326CE5",
+              border: "1px solid rgba(50, 108, 229, 0.15)",
+            }}
             aria-label="Load sample PagerDuty alert"
           >
             PagerDuty
@@ -52,7 +71,12 @@ export default function AlertInput({
           {multiAlert && (
             <button
               onClick={() => loadSample("multiAlert")}
-              className="text-xs px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 rounded transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500"
+              className="text-xs px-3.5 py-1.5 rounded-full font-medium transition-all duration-200 hover:-translate-y-[1px] focus-visible:ring-2 focus-visible:ring-[#326CE5]"
+              style={{
+                background: "rgba(50, 108, 229, 0.08)",
+                color: "#326CE5",
+                border: "1px solid rgba(50, 108, 229, 0.15)",
+              }}
               aria-label="Load sample multi-alert"
             >
               Multi-Alert
@@ -61,25 +85,34 @@ export default function AlertInput({
         </div>
       </div>
 
+      {/* Textarea */}
       <div className="relative">
-        <div className="absolute top-3 left-3 flex items-center gap-1.5 pointer-events-none">
-          <div className="w-3 h-3 rounded-full bg-red-500/60" />
-          <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-          <div className="w-3 h-3 rounded-full bg-green-500/60" />
-          <span className="text-xs text-zinc-600 ml-2 font-mono">alert-input</span>
-        </div>
         <textarea
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder={placeholder}
-          className="w-full h-64 bg-zinc-950 border border-zinc-700 rounded-lg p-4 pt-10 text-sm font-mono text-zinc-300 placeholder:text-zinc-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/20 resize-none transition-all focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="w-full h-64 rounded-xl p-5 text-sm font-mono leading-relaxed placeholder:opacity-30 focus:outline-none resize-none transition-all duration-200"
+          style={{
+            background: "var(--input-bg)",
+            color: "var(--text-secondary)",
+            border: "1px solid var(--border)",
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = "rgba(50, 108, 229, 0.5)";
+            e.currentTarget.style.boxShadow = "0 0 0 3px rgba(50, 108, 229, 0.1)";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.borderColor = "var(--border)";
+            e.currentTarget.style.boxShadow = "none";
+          }}
           spellCheck={false}
           aria-label={title}
         />
         {input && (
           <button
             onClick={() => setInput("")}
-            className="absolute top-3 right-3 text-xs text-zinc-600 hover:text-zinc-400 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-500 rounded"
+            className="absolute top-3 right-3 text-xs px-2 py-1 rounded-md transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-[#326CE5]"
+            style={{ color: "var(--text-muted)" }}
             aria-label="Clear alert input"
           >
             Clear
@@ -87,14 +120,19 @@ export default function AlertInput({
         )}
       </div>
 
-      <div className="flex items-center justify-between mt-4">
-        <div className="text-xs text-zinc-600 font-mono">
+      {/* Footer */}
+      <div className="flex items-center justify-between mt-5">
+        <div className="text-xs font-mono" style={{ color: "var(--text-muted)" }}>
           {input.length > 0 ? `${input.length} chars` : "Waiting for input..."}
         </div>
         <button
           onClick={() => onSubmit(input)}
           disabled={!input.trim() || loading}
-          className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-zinc-700 disabled:text-zinc-500 text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-indigo-500"
+          className="px-7 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2.5 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-[#326CE5] hover:-translate-y-[1px]"
+          style={{
+            background: !input.trim() || loading ? "var(--surface-hover)" : "#326CE5",
+            color: !input.trim() || loading ? "var(--text-muted)" : "#ffffff",
+          }}
           aria-label={loading ? "Analyzing alert" : "Analyze alert"}
         >
           {loading ? (

@@ -192,8 +192,8 @@ html.light .ai-output code { color: #6366f1; }
   transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 .alert-input-glow:focus-within {
-  box-shadow: 0 0 30px rgba(99, 102, 241, 0.12), 0 0 60px rgba(99, 102, 241, 0.06);
-  border-color: rgba(99, 102, 241, 0.4) !important;
+  box-shadow: 0 0 30px rgba(50, 108, 229, 0.1), 0 0 60px rgba(50, 108, 229, 0.05);
+  border-color: rgba(50, 108, 229, 0.3) !important;
 }
 
 /* ===== Pulsing Status Dot ===== */
@@ -901,7 +901,7 @@ html.light .onboarding-card {
 
 /* Focus-visible rings on all interactive elements */
 :focus-visible {
-  outline: 2px solid #818cf8;
+  outline: 2px solid #326CE5;
   outline-offset: 2px;
   border-radius: 4px;
 }
