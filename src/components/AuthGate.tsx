@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { auth, signInWithGoogle, signOut, onAuthStateChanged, User } from '@/lib/firebase';
 import { needsAuth, getUsageCount } from '@/lib/usage';
 
@@ -8,19 +8,27 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
 
+  const checkAuth = useCallback(() => {
+    if (!auth.currentUser && needsAuth()) {
+      setShowAuth(true);
+    }
+  }, []);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      if (u) setShowAuth(false);
     });
     return unsub;
   }, []);
 
   useEffect(() => {
-    if (!user && needsAuth()) {
-      setShowAuth(true);
-    }
-  }, [user]);
+    const handler = () => checkAuth();
+    window.addEventListener('usage-changed', handler);
+    checkAuth();
+    return () => window.removeEventListener('usage-changed', handler);
+  }, [checkAuth]);
 
   if (loading) return null;
 
@@ -28,8 +36,11 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
     return (
       <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
         <div className="max-w-md w-full mx-4 p-8 rounded-2xl bg-zinc-900 border border-zinc-800">
-          <h2 className="text-2xl font-bold text-white mb-2">Free trial complete</h2>
-          <p className="text-zinc-400 mb-6">You&apos;ve used {getUsageCount()} of 5 free generations. Sign in with Google to continue — it&apos;s free.</p>
+          <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <h2 className="text-2xl font-bold text-white mb-2 text-center">Free trial complete</h2>
+          <p className="text-zinc-400 mb-6 text-center">You&apos;ve used {getUsageCount()} of 3 free generations. Sign in with Google to continue — it&apos;s free.</p>
           <button
             onClick={async () => {
               try {
