@@ -206,13 +206,13 @@ function TerminalTyping({ lines, typingSpeed = 18 }: { lines: { text: string; cl
 function Terminal({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="w-full bg-[#0a0a0f] border border-zinc-800/60 rounded-2xl overflow-hidden shadow-2xl shadow-black/60">
-      <div className="flex items-center gap-2 px-5 py-3.5 bg-zinc-900/40 border-b border-zinc-800/40">
-        <div className="w-3 h-3 rounded-full bg-[#ff5f57]/70" />
-        <div className="w-3 h-3 rounded-full bg-[#febc2e]/70" />
-        <div className="w-3 h-3 rounded-full bg-[#28c840]/70" />
-        <span className="text-[11px] text-zinc-600 ml-3 font-mono tracking-wide">{title}</span>
+      <div className="flex items-center gap-2 px-3 sm:px-5 py-3 sm:py-3.5 bg-zinc-900/40 border-b border-zinc-800/40">
+        <div className="w-3 h-3 rounded-full bg-[#ff5f57]/70 flex-shrink-0" />
+        <div className="w-3 h-3 rounded-full bg-[#febc2e]/70 flex-shrink-0" />
+        <div className="w-3 h-3 rounded-full bg-[#28c840]/70 flex-shrink-0" />
+        <span className="text-[11px] text-zinc-600 ml-3 font-mono tracking-wide truncate">{title}</span>
       </div>
-      <div className="p-6 font-mono text-[13px] leading-relaxed overflow-x-auto">
+      <div className="p-3 sm:p-6 font-mono text-[11px] sm:text-[13px] leading-relaxed overflow-x-auto break-words">
         {children}
       </div>
     </div>
@@ -247,7 +247,7 @@ export default function LandingPage() {
           </div>
           <Link
             href="/app"
-            className="px-5 py-2 bg-zinc-100 hover:bg-white text-zinc-900 rounded-lg text-sm font-medium transition-colors"
+            className="px-5 py-2 bg-zinc-100 hover:bg-white text-zinc-900 rounded-lg text-sm font-medium transition-colors min-h-[44px] flex items-center"
           >
             Open App
           </Link>
@@ -255,9 +255,9 @@ export default function LandingPage() {
       </nav>
 
       {/* ── Hero ────────────────────────────────────────────────── */}
-      <section className="relative z-10 pt-32 pb-40 px-6">
+      <section className="relative z-10 pt-20 pb-24 sm:pt-32 sm:pb-40 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-zinc-50 leading-[0.95]">
+          <h1 className="text-4xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-zinc-50 leading-[0.95]">
             <LetterReveal text="Understand" stagger={30} /><br />
             <LetterReveal text="every alert." stagger={30} delay={350} />
           </h1>
@@ -265,10 +265,10 @@ export default function LandingPage() {
             Paste Kubernetes alerts from any monitoring system.<br className="hidden sm:block" />
             Get root cause analysis in seconds.
           </p>
-          <div className="mt-12">
+          <div className="mt-10 sm:mt-12">
             <Link
               href="/app"
-              className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#326CE5] hover:bg-[#4080f0] text-white rounded-xl text-base font-semibold transition-all hover:shadow-lg hover:shadow-[#326CE5]/20"
+              className="inline-flex items-center gap-2.5 px-6 py-3.5 sm:px-8 sm:py-4 bg-[#326CE5] hover:bg-[#4080f0] text-white rounded-xl text-sm sm:text-base font-semibold transition-all hover:shadow-lg hover:shadow-[#326CE5]/20 min-h-[44px]"
             >
               Analyze Alerts
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -296,11 +296,11 @@ export default function LandingPage() {
 
       {/* ── Section 1: Analyze ──────────────────────────────────── */}
       <FadeUp>
-        <section className="relative z-10 py-32 px-6">
-          <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        <section className="relative z-10 py-20 sm:py-32 px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
             <div>
               <p className="text-sm font-mono text-[#326CE5] tracking-widest uppercase mb-4">Analyze</p>
-              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-100 leading-tight">
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-zinc-100 leading-tight">
                 From noise<br />to signal.
               </h2>
               <p className="mt-6 text-zinc-500 text-lg leading-relaxed">
@@ -329,8 +329,8 @@ export default function LandingPage() {
 
       {/* ── Section 2: Runbooks ─────────────────────────────────── */}
       <FadeUp>
-        <section className="relative z-10 py-32 px-6 border-t border-zinc-800/20">
-          <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        <section className="relative z-10 py-20 sm:py-32 px-4 sm:px-6 border-t border-zinc-800/20">
+          <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
             <div className="order-2 lg:order-1">
               <Terminal title="alertlens ~ runbook">
                 <div className="text-zinc-600">$ alertlens runbook --alert CrashLoopBackOff</div>
@@ -352,7 +352,7 @@ export default function LandingPage() {
             </div>
             <div className="order-1 lg:order-2">
               <p className="text-sm font-mono text-[#326CE5] tracking-widest uppercase mb-4">Runbooks</p>
-              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-100 leading-tight">
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-zinc-100 leading-tight">
                 kubectl commands.<br />Ready to paste.
               </h2>
               <p className="mt-6 text-zinc-500 text-lg leading-relaxed">
@@ -366,11 +366,11 @@ export default function LandingPage() {
 
       {/* ── Section 3: Correlate ────────────────────────────────── */}
       <FadeUp>
-        <section className="relative z-10 py-32 px-6 border-t border-zinc-800/20">
-          <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        <section className="relative z-10 py-20 sm:py-32 px-4 sm:px-6 border-t border-zinc-800/20">
+          <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-10 sm:gap-16 items-center">
             <div>
               <p className="text-sm font-mono text-[#326CE5] tracking-widest uppercase mb-4">Correlate</p>
-              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-100 leading-tight">
+              <h2 className="text-3xl sm:text-5xl font-bold tracking-tight text-zinc-100 leading-tight">
                 See the<br />cascade.
               </h2>
               <p className="mt-6 text-zinc-500 text-lg leading-relaxed">
@@ -409,18 +409,18 @@ export default function LandingPage() {
 
       {/* ── Bottom CTA ──────────────────────────────────────────── */}
       <FadeUp>
-        <section className="relative z-10 py-40 px-6 border-t border-zinc-800/20">
+        <section className="relative z-10 py-24 sm:py-40 px-4 sm:px-6 border-t border-zinc-800/20">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-zinc-50 leading-[0.95]">
+            <h2 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-zinc-50 leading-[0.95]">
               Stop reading<br />raw JSON.
             </h2>
             <p className="mt-8 text-lg text-zinc-500 max-w-md mx-auto leading-relaxed font-light">
               No signup. No API keys. Paste an alert and get answers.
             </p>
-            <div className="mt-12">
+            <div className="mt-10 sm:mt-12">
               <Link
                 href="/app"
-                className="inline-flex items-center gap-2.5 px-8 py-4 bg-[#326CE5] hover:bg-[#4080f0] text-white rounded-xl text-base font-semibold transition-all hover:shadow-lg hover:shadow-[#326CE5]/20"
+                className="inline-flex items-center gap-2.5 px-6 py-3.5 sm:px-8 sm:py-4 bg-[#326CE5] hover:bg-[#4080f0] text-white rounded-xl text-sm sm:text-base font-semibold transition-all hover:shadow-lg hover:shadow-[#326CE5]/20 min-h-[44px]"
               >
                 Start Now
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

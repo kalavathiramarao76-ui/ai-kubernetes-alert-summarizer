@@ -14,9 +14,9 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "K8s Alert AI | Kubernetes Alert Summarizer",
+  title: "AlertLens AI — Kubernetes Alert Summarizer & Root Cause Analysis",
   description:
-    "AI-powered Kubernetes alert analysis, root cause detection, runbook generation, and incident correlation for SRE and DevOps teams.",
+    "AI-powered Kubernetes alert analysis, root cause detection, runbook generation, and incident correlation for SRE and DevOps teams. Paste Prometheus, Datadog, or CloudWatch alerts and get instant plain-English summaries.",
   keywords: [
     "kubernetes",
     "alert",
@@ -29,12 +29,37 @@ export const metadata: Metadata = {
     "prometheus",
     "grafana",
     "pagerduty",
+    "alertmanager",
+    "kubernetes monitoring",
+    "incident response",
   ],
+  metadataBase: new URL("https://alertlens.vercel.app"),
   openGraph: {
-    title: "K8s Alert AI | Kubernetes Alert Summarizer",
+    title: "AlertLens AI — Kubernetes Alert Summarizer",
     description:
-      "AI-powered Kubernetes alert analysis for SRE teams. Paste alerts, get instant root cause analysis and runbooks.",
+      "Paste Kubernetes alerts from Prometheus, Datadog, or CloudWatch. Get instant root cause analysis, severity classification, and step-by-step runbooks.",
     type: "website",
+    url: "https://alertlens.vercel.app",
+    siteName: "AlertLens AI",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "AlertLens AI — Kubernetes Alert Summarizer",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AlertLens AI — Kubernetes Alert Summarizer",
+    description:
+      "Paste K8s alerts, get instant root cause analysis and runbooks. No signup required.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -63,7 +88,36 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              name: "AlertLens AI",
+              applicationCategory: "DeveloperApplication",
+              operatingSystem: "Web",
+              description:
+                "AI-powered Kubernetes alert analysis with root cause detection, runbook generation, and incident correlation for SRE and DevOps teams.",
+              url: "https://alertlens.vercel.app",
+              offers: {
+                "@type": "Offer",
+                price: "0",
+                priceCurrency: "USD",
+              },
+              featureList: [
+                "Root cause analysis",
+                "Severity classification (P0-P4)",
+                "Step-by-step runbook generation",
+                "Multi-alert correlation",
+                "Slack integration",
+                "Prometheus, Datadog, CloudWatch support",
+              ],
+            }),
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
