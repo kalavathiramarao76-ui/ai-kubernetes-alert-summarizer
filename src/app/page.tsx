@@ -1,7 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+// ── Reduced motion check ─────────────────────────────────────────────
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+  return reduced;
+}
 
 // ── Scroll fade-up via IntersectionObserver ──────────────────────────
 function useFadeUp() {
@@ -24,11 +37,167 @@ function useFadeUp() {
   return ref;
 }
 
-function FadeUp({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+function FadeUp({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   const ref = useFadeUp();
   return (
-    <div ref={ref} className={`fade-up-section ${className}`}>
+    <div ref={ref} className={`fade-up-section ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
+    </div>
+  );
+}
+
+// ── Letter-by-letter hero reveal ─────────────────────────────────────
+function LetterReveal({ text, className = "", stagger = 30, delay = 0 }: { text: string; className?: string; stagger?: number; delay?: number }) {
+  const reduced = usePrefersReducedMotion();
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => setVisible(true), delay);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [delay]);
+
+  if (reduced) return <span className={className}>{text}</span>;
+
+  return (
+    <span ref={ref} className={className} aria-label={text}>
+      {text.split("").map((char, i) => (
+        <span
+          key={i}
+          className="letter-reveal-char"
+          style={{
+            transitionDelay: visible ? `${i * stagger}ms` : "0ms",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(0.3em)",
+          }}
+          aria-hidden="true"
+        >
+          {char === " " ? "\u00A0" : char}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+// ── Stats counter animation ──────────────────────────────────────────
+function AnimatedCounter({ value, suffix = "", label }: { value: number; suffix?: string; label: string }) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started || reduced) {
+      if (started) setCount(value);
+      return;
+    }
+    let frame: number;
+    const duration = 800;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * value));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [started, value, reduced]);
+
+  return (
+    <span ref={ref}>
+      {count}{suffix} {label}
+    </span>
+  );
+}
+
+// ── Terminal typing animation ────────────────────────────────────────
+function TerminalTyping({ lines, typingSpeed = 18 }: { lines: { text: string; className?: string }[]; typingSpeed?: number }) {
+  const [visibleChars, setVisibleChars] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = usePrefersReducedMotion();
+
+  const totalChars = lines.reduce((sum, l) => sum + l.text.length, 0);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    if (reduced) { setVisibleChars(totalChars); return; }
+    let current = 0;
+    const interval = setInterval(() => {
+      current++;
+      setVisibleChars(current);
+      if (current >= totalChars) clearInterval(interval);
+    }, typingSpeed);
+    return () => clearInterval(interval);
+  }, [started, totalChars, typingSpeed, reduced]);
+
+  let charOffset = 0;
+  return (
+    <div ref={ref}>
+      {lines.map((line, i) => {
+        const lineStart = charOffset;
+        charOffset += line.text.length;
+        const charsToShow = Math.max(0, Math.min(visibleChars - lineStart, line.text.length));
+        if (charsToShow === 0 && visibleChars <= lineStart) return null;
+        return (
+          <div key={i} className={line.className || ""}>
+            {line.text.slice(0, charsToShow)}
+            {charsToShow < line.text.length && charsToShow > 0 && (
+              <span className="cursor-blink">_</span>
+            )}
+          </div>
+        );
+      })}
+      {visibleChars >= totalChars && (
+        <div className="mt-4 text-zinc-700">
+          Done <span className="cursor-blink">_</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -89,9 +258,10 @@ export default function LandingPage() {
       <section className="relative z-10 pt-32 pb-40 px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-extrabold tracking-tight text-zinc-50 leading-[0.95]">
-            Understand<br />every alert.
+            <LetterReveal text="Understand" stagger={30} /><br />
+            <LetterReveal text="every alert." stagger={30} delay={350} />
           </h1>
-          <p className="mt-8 text-lg sm:text-xl text-zinc-500 max-w-xl mx-auto leading-relaxed font-light">
+          <p className="mt-8 text-lg sm:text-xl text-zinc-500 max-w-xl mx-auto leading-relaxed font-light hero-subtitle">
             Paste Kubernetes alerts from any monitoring system.<br className="hidden sm:block" />
             Get root cause analysis in seconds.
           </p>
@@ -113,9 +283,9 @@ export default function LandingPage() {
       <FadeUp>
         <div className="relative z-10 border-y border-zinc-800/30 py-8">
           <div className="max-w-4xl mx-auto px-6 flex flex-wrap items-center justify-center gap-x-12 gap-y-4 text-sm font-mono text-zinc-500 tracking-wide">
-            <span>12 Alert Types</span>
+            <span><AnimatedCounter value={12} label="Alert Types" /></span>
             <span className="text-zinc-700 hidden sm:inline" aria-hidden="true">&bull;</span>
-            <span>P0&ndash;P4 Severity</span>
+            <span>P0&ndash;P4 <span className="severity-pulse-badge">Severity</span></span>
             <span className="text-zinc-700 hidden sm:inline" aria-hidden="true">&bull;</span>
             <span>Slack Integration</span>
             <span className="text-zinc-700 hidden sm:inline" aria-hidden="true">&bull;</span>
@@ -139,35 +309,19 @@ export default function LandingPage() {
               </p>
             </div>
             <Terminal title="alertlens ~ analyze">
-              <div className="text-zinc-600">$ alertlens analyze --source prometheus</div>
-              <div className="mt-3 text-zinc-600 text-[12px]">Parsing alert payload...</div>
-              <div className="mt-4">
-                <span className="text-[#326CE5]">Alert:</span>
-                <span className="text-zinc-300 ml-2">KubePodCrashLooping</span>
-              </div>
-              <div className="mt-1.5">
-                <span className="text-zinc-600">Namespace:</span>
-                <span className="text-zinc-400 ml-2">production</span>
-              </div>
-              <div className="mt-1.5">
-                <span className="text-zinc-600">Pod:</span>
-                <span className="text-zinc-400 ml-2">api-server-7d4f8b6c9-x2k9p</span>
-              </div>
-              <div className="mt-4 pt-3 border-t border-zinc-800/50">
-                <span className="text-zinc-500">Severity:</span>
-                <span className="text-red-400 font-bold ml-2">P1 — Critical</span>
-              </div>
-              <div className="mt-1.5">
-                <span className="text-zinc-500">Root Cause:</span>
-                <span className="text-emerald-400 ml-2">OOM Kill — memory limit 512Mi exceeded</span>
-              </div>
-              <div className="mt-1.5">
-                <span className="text-zinc-500">Action:</span>
-                <span className="text-zinc-300 ml-2">Increase limit to 1Gi, profile heap allocation</span>
-              </div>
-              <div className="mt-4 text-zinc-700">
-                Done in 1.8s <span className="cursor-blink">_</span>
-              </div>
+              <TerminalTyping
+                typingSpeed={18}
+                lines={[
+                  { text: "$ alertlens analyze --source prometheus", className: "text-zinc-600" },
+                  { text: "Parsing alert payload...", className: "mt-3 text-zinc-600 text-[12px]" },
+                  { text: "Alert: KubePodCrashLooping", className: "mt-4 text-zinc-300" },
+                  { text: "Namespace: production", className: "mt-1.5 text-zinc-400" },
+                  { text: "Pod: api-server-7d4f8b6c9-x2k9p", className: "mt-1.5 text-zinc-400" },
+                  { text: "Severity: P1 — Critical", className: "mt-4 pt-3 border-t border-zinc-800/50 text-red-400 font-bold" },
+                  { text: "Root Cause: OOM Kill — memory limit 512Mi exceeded", className: "mt-1.5 text-emerald-400" },
+                  { text: "Action: Increase limit to 1Gi, profile heap allocation", className: "mt-1.5 text-zinc-300" },
+                ]}
+              />
             </Terminal>
           </div>
         </section>

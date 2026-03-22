@@ -847,6 +847,37 @@ html.light .onboarding-card {
   100% { top: 2px; left: -8px; opacity: 0; transform: scale(0); }
 }
 
+/* ===== Letter-by-letter reveal ===== */
+.letter-reveal-char {
+  display: inline-block;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+/* ===== Hero subtitle fade in ===== */
+.hero-subtitle {
+  opacity: 0;
+  transform: translateY(12px);
+  animation: heroSubtitleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1s forwards;
+}
+
+@keyframes heroSubtitleIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Severity badge pulse ===== */
+@keyframes severityPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; text-shadow: 0 0 8px rgba(239, 68, 68, 0.4); }
+}
+
+.severity-pulse-badge {
+  animation: severityPulse 2.5s ease-in-out infinite;
+}
+
 /* ===== Landing page fade-up sections ===== */
 .fade-up-section {
   opacity: 0;
@@ -894,8 +925,21 @@ html.light .onboarding-card {
   .favorite-spark-2,
   .favorite-spark-3,
   .confetti-piece,
-  .monitoring-bar-grow {
+  .monitoring-bar-grow,
+  .severity-pulse-badge,
+  .hero-subtitle {
     animation: none !important;
+  }
+
+  .letter-reveal-char {
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .hero-subtitle {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
 
