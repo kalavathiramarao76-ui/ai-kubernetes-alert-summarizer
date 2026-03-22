@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { incrementUsage } from "@/lib/usage";
 import AlertInput from "@/components/AlertInput";
 import StreamingOutput from "@/components/StreamingOutput";
 import StatusIndicator from "@/components/StatusIndicator";
@@ -42,6 +43,7 @@ export default function AnalyzePage() {
         accumulated += decoder.decode(value, { stream: true });
         setResult(accumulated);
       }
+      incrementUsage();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to analyze alert");
     } finally {
