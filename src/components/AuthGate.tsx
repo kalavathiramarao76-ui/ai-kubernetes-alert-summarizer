@@ -1,18 +1,12 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { auth, signInWithGoogle, signOut, onAuthStateChanged, User } from '@/lib/firebase';
-import { needsAuth, getUsageCount } from '@/lib/usage';
 
 export function AuthGate({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
-
-  const checkAuth = useCallback(() => {
-    if (!auth.currentUser && needsAuth()) {
-      setShowAuth(true);
-    }
-  }, []);
+  const [usageCount, setUsageCount] = useState(0);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
@@ -24,11 +18,16 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const handler = () => checkAuth();
+    const handler = (e: Event) => {
+      const count = (e as CustomEvent).detail;
+      setUsageCount(count);
+      if (!auth.currentUser) {
+        setShowAuth(true);
+      }
+    };
     window.addEventListener('usage-changed', handler);
-    checkAuth();
     return () => window.removeEventListener('usage-changed', handler);
-  }, [checkAuth]);
+  }, []);
 
   if (loading) return null;
 
@@ -40,11 +39,17 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
             <svg className="w-6 h-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
           </div>
           <h2 className="text-2xl font-bold text-white mb-2 text-center">Free trial complete</h2>
-          <p className="text-zinc-400 mb-6 text-center">You&apos;ve used {getUsageCount()} of 3 free generations. Sign in with Google to continue — it&apos;s free.</p>
+          <p className="text-zinc-400 mb-6 text-center">You&apos;ve used {usageCount} of 3 free generations. Sign in with Google to continue — it&apos;s free.</p>
           <button
             onClick={async () => {
               try {
-                await signInWithGoogle();
+                const result = await signInWithGoogle();
+                const u = result.user;
+                fetch('/api/auth/track', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ uid: u.uid, email: u.email }),
+                });
                 setShowAuth(false);
               } catch (e) { console.error(e); }
             }}

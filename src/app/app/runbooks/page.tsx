@@ -40,6 +40,14 @@ export default function RunbooksPage() {
         body: JSON.stringify({ alert }),
       });
 
+      if (response.status === 429) {
+        const errorData = await response.json();
+        if (errorData.error === "FREE_LIMIT_REACHED") {
+          window.dispatchEvent(new CustomEvent("usage-changed", { detail: errorData.count }));
+          return;
+        }
+      }
+
       if (!response.ok) {
         const err = await response.json().catch(() => ({ error: "Unknown error" }));
         throw new Error(err.error || `HTTP ${response.status}`);
